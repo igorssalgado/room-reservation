@@ -10,13 +10,16 @@ router.post('/users', async (req, res) => {
 
     try {
         await user.save();
-        console.log('User created')
         const token = await user.generateAuthToken()
         res.status(201).send({ user, token });
     } catch (e) {
         res.status(400).send(e);
     }
 });
+
+router.get('/users/me', async (req, res) => {
+    res.send(req.user);
+})
 
 // router.post('/users/logout', auth, async (req, res) => {
 //     try {
