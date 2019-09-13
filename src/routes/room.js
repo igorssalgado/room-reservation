@@ -1,6 +1,7 @@
 const express = require('express');
 const Room = require('../models/room');
 const auth = require('../middleware/auth');
+const checkAvailability = require('../middleware/roomAvailability')
 const router = new express.Router();
 
 //creates a room to the specific user
@@ -9,10 +10,16 @@ router.post('/rooms', auth, async (req, res) => {
         ...req.body, //copy all info from the object
         owner: req.user._id
     })
-
+    console.log(room.date)
     try {
-        await room.save();
-        res.status(201).send(room);
+        const date = checkAvailability(room.date);
+        
+        if(date===true){
+            res.status(201).send(room);
+            await room.save();
+        }else{
+            throw new Error('day is taken')
+        }
     } catch (e) {
         res.status(400).send(e);
     }
