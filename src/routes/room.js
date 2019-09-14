@@ -1,7 +1,7 @@
 const express = require('express');
 const Room = require('../models/room');
 const auth = require('../middleware/auth');
-const checkAvailability = require('../middleware/roomAvailability')
+//const checkAvailability = require('../middleware/roomAvailability')
 const router = new express.Router();
 
 //creates a room to the specific user
@@ -10,18 +10,47 @@ router.post('/rooms', auth, async (req, res) => {
         ...req.body, //copy all info from the object
         owner: req.user._id
     })
-    console.log(room.date)
+
     try {
-        const date = checkAvailability(room.date);
-        
-        if(date===true){
-            res.status(201).send(room);
-            await room.save();
-        }else{
-            throw new Error('day is taken')
-        }
+        //const date = checkAvailability('ok');
+
+
+        res.status(201).send(room);
+        await room.save();
+
     } catch (e) {
         res.status(400).send(e);
+    }
+});
+
+// retorna o usuario que agendou a sala
+router.get('/rooms/:id', auth, async (req, res) => { //com o id da sala
+    const _id = req.params.id;
+
+    try {
+        const room = await Room.findOne({ _id, owner: req.user._id }) // req.user._id from the auth user
+
+        await room.save();
+        console.log(room)
+        if (!room) {
+            return res.status(404).send();
+        }
+
+        res.send(room);
+    } catch (e) {
+        res.status(500).send();
+    }
+})
+
+//retorna as salas que foram agendadas pelo usuario
+router.get('/rooms', auth, async (req, res) => {
+
+    try {
+        const rooms = await Room.find({ owner: req.user._id });
+        console.log(rooms)
+        res.status(201).send(rooms);
+    } catch (e) {
+        res.status(500).send();
     }
 });
 

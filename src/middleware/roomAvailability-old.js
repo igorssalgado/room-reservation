@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const checkDayAvailability = function(date){
     console.log(date)
-    if(date==='2019-01-01T02:00:00.000Z'){
+    if(date!=='ok'){
         console.log("day was taken");
         return false;
     }else{
@@ -10,5 +10,7 @@ const checkDayAvailability = function(date){
         return true;
     }
 }
+
+
 
 module.exports = checkDayAvailability;
