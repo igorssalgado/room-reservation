@@ -1,8 +1,8 @@
 const express = require('express');
 const Room = require('../models/room');
 const auth = require('../middleware/auth');
-//const checkAvailability = require('../middleware/roomAvailability')
 const router = new express.Router();
+const date = require('date-and-time'); //pra mexer com os horarios dos agendamento
 
 //creates a room booking to the specific user
 router.post('/rooms', auth, async (req, res) => {
@@ -11,12 +11,19 @@ router.post('/rooms', auth, async (req, res) => {
         owner: req.user._id
     })
 
+    // descobre o horario do checkout levando em conta a duracao
+    room.checkout = date.addHours(room.checkin, room.duration)
+
+    // // pra mostrar o horario que ta no banco no timezone que ta rodando o navegador
+    // var localDate = new Date(room.checkout); 
+    // var localTimeString = localDate.toLocaleTimeString(undefined, {
+    //     hour: '2-digit',
+    //     minute: '2-digit',
+    // })
+
     try {
-
         res.status(201).send(room);
-        room.availability = false
         await room.save();
-
     } catch (e) {
         res.status(400).send(e);
     }
@@ -53,7 +60,19 @@ router.get('/rooms', auth, async (req, res) => {
 router.get('/roomsTodaysBooking', auth, async (req, res) => {
 
     const currentDate = new Date();
-    const today = currentDate.getDate() + "/" + currentDate.getMonth() + "/" + currentDate.getFullYear()
+
+    //mes 12 vai zuar pq 'today' volta o numero do mes sem o 0 na frente e no db tem o 0 na frente (com essa funcao nao)
+    const checkMonth = (req, res) => {
+        if (currentDate.getMonth() < 10) {
+            const today = currentDate.getFullYear() + "-0" + (currentDate.getMonth() + 1) + "-" + currentDate.getDate()// + "T00:00:00.000Z"; //getMonth = Jan é 0 e nao 1
+            return today;
+        } else {
+            const today = currentDate.getFullYear() + "-" + (currentDate.getMonth() + 1) + "-" + currentDate.getDate()// + "T00:00:00.000Z"; //getMonth = Jan é 0 e nao 1
+            return today;
+        }
+    }
+
+    const today = checkMonth()
     try {
         const rooms = await Room.find({ date: today });
         res.send(rooms)
