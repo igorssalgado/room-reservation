@@ -9,6 +9,12 @@ const roomSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    checkin:{
+        type: Date
+    },
+    checkout:{
+        type: Date
+    },
     duration: {
         type: Number
     },
