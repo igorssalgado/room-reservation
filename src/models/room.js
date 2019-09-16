@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 const roomSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
-        trim: true
+        required: true
     },
     date: {
         type: Date,
@@ -17,7 +16,9 @@ const roomSchema = new mongoose.Schema({
         require: true,
         ref: 'User'
     },
-    
+    availability:{
+        type: Boolean
+    }
 })
 
 const Room = mongoose.model('Room', roomSchema);

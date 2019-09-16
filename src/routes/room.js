@@ -12,10 +12,9 @@ router.post('/rooms', auth, async (req, res) => {
     })
 
     try {
-        //const date = checkAvailability('ok');
-
 
         res.status(201).send(room);
+        room.availability = false
         await room.save();
 
     } catch (e) {
@@ -53,6 +52,20 @@ router.get('/rooms', auth, async (req, res) => {
         res.status(500).send();
     }
 });
+
+// rota pra voltar as salas disponiveis
+router.get('/roomsAvailability', auth, async (req, res) => {
+    
+    try{
+        const rooms = await Room.find({ availability: true });
+        console.log(rooms)
+        
+        res.send(rooms)
+    }catch (e){
+        res.status(500).send()
+    }
+});
+
 
 // // GET /rooms?completed=false
 // // GET /rooms?limit=10&skip=0

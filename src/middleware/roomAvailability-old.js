@@ -1,13 +1,13 @@
 const mongoose = require('mongoose')
 
-const checkDayAvailability = function(date){
-    console.log(date)
-    if(date!=='ok'){
-        console.log("day was taken");
-        return false;
-    }else{
+const checkDayAvailability = function(room){
+
+    if(room.availability===true){
         console.log("day is free");
         return true;
+    }else{
+        console.log("day was taken");
+        return false ;
     }
 }
 
