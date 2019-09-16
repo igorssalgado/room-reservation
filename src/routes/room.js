@@ -4,7 +4,7 @@ const auth = require('../middleware/auth');
 //const checkAvailability = require('../middleware/roomAvailability')
 const router = new express.Router();
 
-//creates a room to the specific user
+//creates a room booking to the specific user
 router.post('/rooms', auth, async (req, res) => {
     const room = new Room({
         ...req.body, //copy all info from the object
@@ -28,13 +28,10 @@ router.get('/rooms/:id', auth, async (req, res) => { //com o id da sala
 
     try {
         const room = await Room.findOne({ _id, owner: req.user._id }) // req.user._id from the auth user
-
         await room.save();
-        console.log(room)
         if (!room) {
             return res.status(404).send();
         }
-
         res.send(room);
     } catch (e) {
         res.status(500).send();
@@ -46,7 +43,6 @@ router.get('/rooms', auth, async (req, res) => {
 
     try {
         const rooms = await Room.find({ owner: req.user._id });
-        console.log(rooms)
         res.status(201).send(rooms);
     } catch (e) {
         res.status(500).send();
@@ -54,14 +50,14 @@ router.get('/rooms', auth, async (req, res) => {
 });
 
 // rota pra voltar as salas disponiveis
-router.get('/roomsAvailability', auth, async (req, res) => {
-    
-    try{
-        const rooms = await Room.find({ availability: true });
-        console.log(rooms)
-        
+router.get('/roomsTodaysBooking', auth, async (req, res) => {
+
+    const currentDate = new Date();
+    const today = currentDate.getDate() + "/" + currentDate.getMonth() + "/" + currentDate.getFullYear()
+    try {
+        const rooms = await Room.find({ date: today });
         res.send(rooms)
-    }catch (e){
+    } catch (e) {
         res.status(500).send()
     }
 });

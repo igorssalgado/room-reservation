@@ -6,17 +6,18 @@ const roomSchema = new mongoose.Schema({
         required: true
     },
     date: {
-        type: Date,
-        date: true,
-        required: true,
-        unique: true
+        type: String,
+        required: true
+    },
+    duration: {
+        type: Number
     },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         require: true,
         ref: 'User'
     },
-    availability:{
+    availability: {
         type: Boolean
     }
 })
