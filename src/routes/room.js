@@ -3,6 +3,7 @@ const Room = require('../models/room');
 const auth = require('../middleware/auth');
 const router = new express.Router();
 const date = require('date-and-time'); //pra mexer com os horarios dos agendamento
+const timeZoneConverter = require('../middleware/timeZoneConverter');
 
 //creates a room booking to the specific user
 router.post('/rooms', auth, async (req, res) => {
@@ -14,12 +15,8 @@ router.post('/rooms', auth, async (req, res) => {
     // descobre o horario do checkout levando em conta a duracao
     room.checkout = date.addHours(room.checkin, room.duration)
 
-    // // pra mostrar o horario que ta no banco no timezone que ta rodando o navegador
-    // var localDate = new Date(room.checkout); 
-    // var localTimeString = localDate.toLocaleTimeString(undefined, {
-    //     hour: '2-digit',
-    //     minute: '2-digit',
-    // })
+    const localTimeZone = timeZoneConverter(room.checkout)
+    console.log(localTimeZone);
 
     try {
         res.status(201).send(room);
